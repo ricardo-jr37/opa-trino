@@ -1,0 +1,24 @@
+services:
+  opa:
+    image: openpolicyagent/opa:latest
+    volumes:
+      - ./opa_config:/policies
+    ports:
+      - "8181:8181"
+    command: >
+      run --server 
+      --set=decision_logs.console=true 
+      --addr :8181
+      /policies
+
+  trino:
+    image: trinodb/trino:latest
+    container_name: trino
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./trino-config:/etc/trino
+    environment:
+      - JVM_MAX_MEMORY=2G
+    depends_on:
+      - opa
